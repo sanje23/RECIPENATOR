@@ -1,0 +1,61 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# VSCode settings
+.vscode/
+
+# Python bytecode files
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual environment directories
+env/
+.venv/
+venv/
+
+# Log files
+*.log
+*.out
+
+# IDE files
+.idea/
+
+# Coverage directories (used by pytest, etc.)
+coverage/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Node.js (if applicable for front-end development)
+node_modules/
+
+# Build output directories (for JavaScript/React/Vue/etc.)
+build/
+dist/
+
+# Environment variables file
+.env
+
+# Model files (keras, tensorflow)
+*.h5
+*.pkl
+
+# Temporary files from text editors
+*.swp
+*.bak
+*.swo
+
+# Flask specific folders
+instance/
+
+# User-specific files for different systems
+*.sublime-workspace
+*.sublime-project
+
+# Ignore uploads directory
+/uploads/
+
+# Ignore compiled Python files from different environments
+*.egg-info/

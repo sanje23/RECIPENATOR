@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RECIPENATOR</title>
+    
+    <!-- SEO and Accessibility -->
+    <meta name="description" content="Recipenator is your go-to platform for discovering recipes tailored to your taste and preferences.">
+    <meta name="keywords" content="recipes, cooking, culinary, food, ingredients, meal suggestions">
+    <meta name="author" content="Recipenator Team">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Font Awesome for Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>RECIPENATOR</h1>
+        <p class="quote">"Variety is the spice of life!"</p>
+        <div class="three-dots-menu">
+            <span class="dots">&#x2022;&#x2022;&#x2022;</span>
+            <div class="about-us-content">
+                <h2>About Us</h2>
+                <p>Welcome to RECIPENATOR, your go-to platform for discovering delicious recipes based on your favorite ingredients. Whether you're an experienced chef or a home cook, we aim to inspire your culinary journey with a vast collection of recipes tailored to your taste and dietary preferences.</p>
+                <p>Our mission is to make cooking enjoyable and accessible for everyone by providing a seamless search experience through our intuitive web application. Upload your ingredient images or enter them manually, and let RECIPENATOR suggest the perfect recipes for your next meal.</p>
+                <p>Join our community of food enthusiasts and start exploring a world of flavors with RECIPENATOR today!</p>
+            </div>
+        </div>
+
+        <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+            <label for="file">Upload Image Here</label>
+            <input type="file" name="file" id="file" multiple>
+            <input type="submit" value="Upload">
+        </form>
+        
+        <form id="recipeForm" action="/get_recipe" method="POST">
+            <label for="ingredients">Enter Ingredients (comma-separated):</label>
+            <input type="text" name="ingredients" id="ingredients">
+            
+            <label for="dietary_preference">Select Dietary Preference:</label>
+            <select name="dietary_preference" id="dietary_preference">
+                <option value="">None</option>
+                <option value="vegetarian">Vegetarian</option>
+            </select>
+            
+            <label for="language">Select Language:</label>
+            <select name="language" id="language">
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="ta">Tamil</option>
+                <option value="te">Telugu</option>
+                <option value="ml">Malayalam</option>
+            </select>
+
+            <input type="submit" value="Get Recipe">
+        </form>
+
+        <div id="recipeResult"></div>
+    </div>
+
+    <div class="contact-section">
+        <h2>About me</h2>
+        <pre style="font-size: 18px;">
+            Hi, I'm Sanjeevi, a passionate full-stack developer with experience in backend technologies like Flask 
+            and a strong foundation in Python and Java. I'm always eager to learn and explore new technologies to 
+            create impactful solutions. Currently, I'm looking to expand my skills in Java full-stack development 
+            and contribute to open-source projects. Feel free to reach out to me on LinkedIn.
+        </pre>
+        <p><a href="https://www.linkedin.com/in/sanjeevir23">LinkedIn profile</a></p>
+    </div>
+
+    <div class="feedback-section">
+        <h2>Feedback</h2>
+        <p>We would love to hear your thoughts and suggestions. Please fill out our feedback form:</p>
+        <p><a href="https://forms.gle/N7zPSN8LXA9QHfSu9" target="_blank">Click here to fill out the feedback form</a></p>
+    </div>
+
+    <img src="static/images/hero.png" alt="Rotating Image" id="rotatingImage">
+
+    <script>
+        document.getElementById('uploadForm').onsubmit = async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            displayRecipe(result);
+        };
+
+        document.getElementById('recipeForm').onsubmit = async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const response = await fetch('/get_recipe', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            displayRecipe(result);
+        };
+
+        function displayRecipe(data) {
+            const recipeDiv = document.getElementById('recipeResult');
+            if (data.error) {
+                recipeDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+            } else {
+                recipeDiv.innerHTML = `
+                    <h2>${data.recipe_title}</h2>
+                    <img src="${data.recipe_image}" alt="${data.recipe_title}">
+                    <h3>Instructions:</h3>
+                    <ul>
+                        ${data.instructions.map((instruction, index) => `
+                            <li>${instruction}</li>
+                            <audio controls>
+                                <source src="data:audio/mp3;base64,${data.tts_instructions[index]}" type="audio/mp3">
+                                Your browser does not support the audio element.
+                            </audio>
+                        `).join('')}
+                    </ul>
+                    <h3>Nutrition Information:</h3>
+                    <p>Calories: ${data.nutrition_info.calories}</p>
+                    <p>Carbs: ${data.nutrition_info.carbs}</p>
+                    <p>Fat: ${data.nutrition_info.fat}</p>
+                    <p>Protein: ${data.nutrition_info.protein}</p>
+                    <h3>Watch Video:</h3>
+                    ${data.youtube_video ? `<iframe width="560" height="315" src="https://www.youtube.com/embed/${data.youtube_video.split('v=')[1]}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>` : '<p>No video found.</p>'}
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
